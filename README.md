@@ -8,6 +8,10 @@ changes its css, attributes, or DOM content. It also introduces new events,
 Please note that this plugin can be tricky and needs to be refined further before 
 it is considered non-beta.
 
+# Demo
+
+You can see some examples [here](http://dl.dropbox.com/u/124192/websites/jquerytie/index.html).
+
 ## Features
 
   * Tie one element's appearance to another's, even when JS modifies the page
@@ -61,7 +65,7 @@ Requires [jQuery](http://jquery.com) and this plugin.
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
     <script type="text/javascript" src="jquery.tie.js"></script>
     
-First, image we're working with this markup:
+First, imagine we're working with this markup:
 
     <div id="element_container">
       <div class="group">
@@ -93,6 +97,10 @@ To match element A's width to twice element B's height:
       $("#b").height(100);
     });
     
+## Advanced Usage
+
+### Global Listeners
+
 One issue with matching CSS is something I call "passive resizing".
 Basically, a block level element's width is controlled by one of its 
 parents' widths instead of its children.
@@ -103,13 +111,11 @@ To completely avoid the issue, you could set up a global listener:
       $("#a").tie("width", "#b", "width", { globalListener: true });
       $("#elements").width(300);
     });
-    
-## Advanced Usage
 
 ### Proxy Listeners
 
 Global listeners introduce a lot of extra function calls that we 
-may want to avoid. Any time there is ANY css/dom change on the page, 
+may want to avoid. Any time there is ANY css/dom update on the page, 
 your tie function will be called.
 
 For advanced users, there is a way to reduce this event pollution. 
@@ -150,25 +156,25 @@ You also can trigger the tie function on scroll or resize:
         });
     });
     
-### Event Usage
+### Events
 
 To set up a domupdate event listener:
 
-$(document).ready(function() {
-  $("#a").domupdate(function() {
-    alert("the dom of my descendants has been updated!");
-  });
-  $("#a").domupdate();
-});
+    $(document).ready(function() {
+      $("#a").domupdate(function() {
+        alert("the dom of my descendants has been updated!");
+      });
+      $("#a").domupdate();
+    });
 
 To set up a cssupdate event listener:
 
-$(document).ready(function() {
-  $("#a").cssupdate(function() {
-    alert("the css of my descendants has been updated!");
-  });
-  $("#a").cssupdate();
-});
+    $(document).ready(function() {
+      $("#a").cssupdate(function() {
+        alert("the css of my descendants has been updated!");
+      });
+      $("#a").cssupdate();
+    });
 
 ## Options
 

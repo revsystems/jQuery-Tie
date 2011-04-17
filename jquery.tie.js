@@ -65,6 +65,7 @@ displayChangeWrap("text", "domupdate", 1);
 displayChangeWrap("html", "domupdate", 1);
 displayChangeWrap("empty", "domupdate", 0);
 displayChangeWrap("remove", "domupdate", 0);
+displayChangeWrap("removeAttr", "domupdate", 1);
 
 $.fn.tie = function(lhsProp, $rhs, rhsProp, options) {
 

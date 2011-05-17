@@ -38,9 +38,10 @@ $.fx.prototype.update = function() {
 function displayChangeWrap(funcName, trigger, reqArgs, reqFunc) {
   $.fn["old_" + funcName] = $.fn[funcName];
   $.fn[funcName] = function() {
-    var $this = $(this);
-    var $par = $this.parent();
+    var $this = $(this),
+        $par = $this.parent();
     result = $.fn["old_" + funcName].apply(this, arguments);
+    if($(this).size() == 0) return result;
     var args = arguments;
     if(arguments.length >= reqArgs && (!reqFunc || reqFunc.call(this, args))) {
       if(funcName == "remove") {

@@ -58,18 +58,6 @@ THE SOFTWARE.
     };
   }
 
-  displayChangeWrap("css", "cssupdate", 1, function (args) { return args.length >= 2 || typeof args[0] === "object"; });
-  displayChangeWrap("attr", "domupdate", 2, function (args) { return args.length === 2; });
-  displayChangeWrap("append", "domupdate", 1);
-  displayChangeWrap("prepend", "domupdate", 1);
-  displayChangeWrap("before", "domupdate", 1);
-  displayChangeWrap("after", "domupdate", 1);
-  displayChangeWrap("text", "domupdate", 1);
-  displayChangeWrap("html", "domupdate", 1);
-  displayChangeWrap("empty", "domupdate", 0);
-  displayChangeWrap("remove", "domupdate", 0);
-  displayChangeWrap("removeAttr", "domupdate", 1);
-
   $.fn.tie = function (lhsProp, $rhs, rhsProp, options) {
 
     options = $.extend({
@@ -144,19 +132,35 @@ THE SOFTWARE.
   };
 
   $.fn.cssupdate = function (handler) {
+    var $e = $(this);
     if (!handler) {
-      $(this).trigger("cssupdate");
+      $e.trigger("cssupdate");
     } else {
-      $(this).bind("cssupdate", handler);
+      $e.bind("cssupdate", handler);
     }
+    return $e;
   };
 
   $.fn.domupdate = function (handler) {
+    var $e = $(this);
     if (!handler) {
-      $(this).trigger("domupdate");
+      $e.trigger("domupdate");
     } else {
-      $(this).bind("domupdate", handler);
+      $e.bind("domupdate", handler);
     }
+    return $e;
   };
+
+  displayChangeWrap("css", "cssupdate", 1, function (args) { return args.length >= 2 || typeof args[0] === "object"; });
+  displayChangeWrap("attr", "domupdate", 2, function (args) { return args.length === 2; });
+  displayChangeWrap("append", "domupdate", 1);
+  displayChangeWrap("prepend", "domupdate", 1);
+  displayChangeWrap("before", "domupdate", 1);
+  displayChangeWrap("after", "domupdate", 1);
+  displayChangeWrap("text", "domupdate", 1);
+  displayChangeWrap("html", "domupdate", 1);
+  displayChangeWrap("empty", "domupdate", 0);
+  displayChangeWrap("remove", "domupdate", 0);
+  displayChangeWrap("removeAttr", "domupdate", 1);
 
 }(jQuery));

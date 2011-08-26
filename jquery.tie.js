@@ -1,3 +1,4 @@
+/*globals jQuery */
 /*
 Copyright (c) 2010 RevSystems, Inc
 
@@ -26,120 +27,136 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-(function($) {
+(function ($) {
 
-$.fx.prototype.oldUpdate = $.fx.prototype.update;
-$.fx.prototype.update = function() {
-  result = this.oldUpdate.apply(this, arguments);
-  $(this.elem).trigger("cssupdate");
-  return result;
-}
-
-function displayChangeWrap(funcName, trigger, reqArgs, reqFunc) {
-  $.fn["old_" + funcName] = $.fn[funcName];
-  $.fn[funcName] = function() {
-    var $this = $(this),
-        $par = $this.parent();
-    result = $.fn["old_" + funcName].apply(this, arguments);
-    if($(this).size() == 0) return result;
-    var args = arguments;
-    if(arguments.length >= reqArgs && (!reqFunc || reqFunc.call(this, args))) {
-      if(funcName == "remove") {
-        $par.trigger(trigger);
-      }
-      else if($this[0].nodeName.toLowerCase() != "body") {
-        $this.trigger(trigger);
-      }
-      return $this;
-    }
+  $.fx.prototype.oldUpdate = $.fx.prototype.update;
+  $.fx.prototype.update = function () {
+    var result = this.oldUpdate.apply(this, arguments);
+    $(this.elem).trigger("cssupdate");
     return result;
-  }
-}
+  };
 
-displayChangeWrap("css", "cssupdate", 1, function(args) { return args.length >= 2 || typeof args[0] === "object"; });
-displayChangeWrap("attr", "domupdate", 2, function(args) { return args.length == 2; });
-displayChangeWrap("append", "domupdate", 1);
-displayChangeWrap("prepend", "domupdate", 1);
-displayChangeWrap("before", "domupdate", 1);
-displayChangeWrap("after", "domupdate", 1);
-displayChangeWrap("text", "domupdate", 1);
-displayChangeWrap("html", "domupdate", 1);
-displayChangeWrap("empty", "domupdate", 0);
-displayChangeWrap("remove", "domupdate", 0);
-displayChangeWrap("removeAttr", "domupdate", 1);
-
-$.fn.tie = function(lhsProp, $rhs, rhsProp, options) {
-
-  options = $.extend({
-    globalListener: false,
-    onImgLoad: false,
-    onResize: false,
-    onScroll: false,
-    proxyListener: false
-  }, options);
-  
-  if(!rhsProp) rhsProp = lhsProp;
-  $rhs = $($rhs);
-  var proxyListener = $(options.proxyListener);
-  if(options.globalListener) {
-    proxyListener = $("body");
-  }
-  else if(!proxyListener) {
-    proxyListener = $rhs.parent();
-  }
-  
-  return $(this).each(function() {
-    var $lhs = $(this);
-    var rhsIsAncestor = $lhs[0] == $rhs[0];
-    $lhs.parents().each(function() { if(this == $rhs[0]) rhsIsAncestor = true; });
-    function updateProp(e) {
-      $lhs.old_css(lhsProp, $.isFunction(rhsProp) ? rhsProp.call($rhs) : $rhs.old_css(rhsProp));
-      if(!rhsIsAncestor && !options.globalListener && !options.proxyListener) {
-        $lhs.trigger("cssupdate");
+  function displayChangeWrap(funcName, trigger, reqArgs, reqFunc) {
+    $.fn["old_" + funcName] = $.fn[funcName];
+    $.fn[funcName] = function () {
+      var args = arguments,
+        $this = $(this),
+        $par = $this.parent(),
+        result = $.fn["old_" + funcName].apply(this, arguments);
+      if (!$(this).length) {
+        return result;
       }
-    }
-    function triggerProxy() { $(this).trigger("cssupdate"); }
-    function destroy() {
-      proxyListener.unbind("cssupdate", updateProp);
-      proxyListener.unbind("domupdate", updateProp);
-      $rhs.unbind("cssupdate", updateProp);
-      $rhs.unbind("domupdate", updateProp);
-      $lhs.unbind("destroy.tie", destroy);
-      $(window).unbind("resize", updateProp);
-      $(window).unbind("scroll", updateProp);
-      $("img").unbind("load", triggerProxy);
-    }
-    updateProp();
-    if(rhsIsAncestor || options.globalListener || options.proxyListener) {
-      proxyListener.bind("cssupdate", updateProp);
-      proxyListener.bind("domupdate", updateProp);
-    }
-    else {
-      $rhs.bind("cssupdate", updateProp);
-      $rhs.bind("domupdate", updateProp);
-    }
-    if(options.globalListener && options.onImgLoad) {
-      $("img").bind("load", triggerProxy);
-    }
-    else if(options.onImgLoad) {
-      $rhs.find("img").bind("load", triggerProxy);
-    }
-    $lhs.bind("destroy.tie", destroy);
-    if(options.onResize) $(window).bind("resize", updateProp);
-    if(options.onScroll) $(window).bind("scroll", updateProp);
-  });
-}
+      if (arguments.length >= reqArgs && (!reqFunc || reqFunc.call(this, args))) {
+        if (funcName === "remove") {
+          $par.trigger(trigger);
+        } else if ($this[0].nodeName.toLowerCase() !== "body") {
+          $this.trigger(trigger);
+        }
+        return $this;
+      }
+      return result;
+    };
+  }
 
-$.fn.untie = function() { return $(this).trigger("destroy"); }
+  displayChangeWrap("css", "cssupdate", 1, function (args) { return args.length >= 2 || typeof args[0] === "object"; });
+  displayChangeWrap("attr", "domupdate", 2, function (args) { return args.length === 2; });
+  displayChangeWrap("append", "domupdate", 1);
+  displayChangeWrap("prepend", "domupdate", 1);
+  displayChangeWrap("before", "domupdate", 1);
+  displayChangeWrap("after", "domupdate", 1);
+  displayChangeWrap("text", "domupdate", 1);
+  displayChangeWrap("html", "domupdate", 1);
+  displayChangeWrap("empty", "domupdate", 0);
+  displayChangeWrap("remove", "domupdate", 0);
+  displayChangeWrap("removeAttr", "domupdate", 1);
 
-$.fn.cssupdate = function(handler) {
-  if(!handler) $(this).trigger("cssupdate");
-  else $(this).bind("cssupdate", handler);
-}
+  $.fn.tie = function (lhsProp, $rhs, rhsProp, options) {
 
-$.fn.domupdate = function(handler) {
-  if(!handler) $(this).trigger("domupdate");
-  else $(this).bind("domupdate", handler);
-}
+    options = $.extend({
+      globalListener: false,
+      onImgLoad: false,
+      onResize: false,
+      onScroll: false,
+      proxyListener: false
+    }, options);
+    
+    if (!rhsProp) {
+      rhsProp = lhsProp;
+    }
+    $rhs = $($rhs);
+    var proxyListener = $(options.proxyListener);
+    if (options.globalListener) {
+      proxyListener = $("body");
+    } else if (!proxyListener) {
+      proxyListener = $rhs.parent();
+    }
+    
+    return $(this).each(function () {
+      var $lhs = $(this),
+        rhsIsAncestor = $lhs[0] === $rhs[0];
+      $lhs.parents().each(function () {
+        if (this === $rhs[0]) {
+          rhsIsAncestor = true;
+        }
+      });
+      function updateProp(e) {
+        $lhs.old_css(lhsProp, $.isFunction(rhsProp) ? rhsProp.call($rhs) : $rhs.old_css(rhsProp));
+        if (!rhsIsAncestor && !options.globalListener && !options.proxyListener) {
+          $lhs.trigger("cssupdate");
+        }
+      }
+      function triggerProxy() { $(this).trigger("cssupdate"); }
+      function destroy() {
+        proxyListener.unbind("cssupdate", updateProp);
+        proxyListener.unbind("domupdate", updateProp);
+        $rhs.unbind("cssupdate", updateProp);
+        $rhs.unbind("domupdate", updateProp);
+        $lhs.unbind("destroy.tie", destroy);
+        $(window).unbind("resize", updateProp);
+        $(window).unbind("scroll", updateProp);
+        $("img").unbind("load", triggerProxy);
+      }
+      updateProp();
+      if (rhsIsAncestor || options.globalListener || options.proxyListener) {
+        proxyListener.bind("cssupdate", updateProp);
+        proxyListener.bind("domupdate", updateProp);
+      } else {
+        $rhs.bind("cssupdate", updateProp);
+        $rhs.bind("domupdate", updateProp);
+      }
+      if (options.globalListener && options.onImgLoad) {
+        $("img").bind("load", triggerProxy);
+      } else if (options.onImgLoad) {
+        $rhs.find("img").bind("load", triggerProxy);
+      }
+      $lhs.bind("destroy.tie", destroy);
+      if (options.onResize) {
+        $(window).bind("resize", updateProp);
+      }
+      if (options.onScroll) {
+        $(window).bind("scroll", updateProp);
+      }
+    });
+  };
 
-})($);
+  $.fn.untie = function () {
+    return $(this).trigger("destroy");
+  };
+
+  $.fn.cssupdate = function (handler) {
+    if (!handler) {
+      $(this).trigger("cssupdate");
+    } else {
+      $(this).bind("cssupdate", handler);
+    }
+  };
+
+  $.fn.domupdate = function (handler) {
+    if (!handler) {
+      $(this).trigger("domupdate");
+    } else {
+      $(this).bind("domupdate", handler);
+    }
+  };
+
+}(jQuery));

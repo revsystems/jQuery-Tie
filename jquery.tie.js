@@ -52,7 +52,6 @@ THE SOFTWARE.
         } else if ($this[0].nodeName.toLowerCase() !== "body") {
           $this.trigger(trigger);
         }
-        return $this;
       }
       return result;
     };
